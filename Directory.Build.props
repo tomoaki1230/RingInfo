@@ -1,0 +1,16 @@
+<Project>
+  <!-- ソリューション全体の共通ビルド設定 -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>1.0.0</Version>
+    <Product>RingInfo</Product>
+    <Authors>Tomoaki Bessho</Authors>
+    <Company>Tomoaki Bessho</Company>
+    <Copyright>Copyright (c) 2026 Tomoaki Bessho</Copyright>
+    <SatelliteResourceLanguages>ja;en</SatelliteResourceLanguages>
+    <!-- デバッグ情報は dll/exe に埋め込む（配布フォルダーを exe 1 つにするため） -->
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,23 @@
+<UserControl x:Class="RingInfo.App.Controls.ChartHost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:oxy="http://oxyplot.org/wpf">
+    <!-- DataContext に ChartData を設定して使う。グラフは表示されているときだけ描く（ChartHost.xaml.cs） -->
+    <Grid>
+        <oxy:PlotView x:Name="Plot" Background="Transparent">
+            <oxy:PlotView.DefaultTrackerTemplate>
+                <ControlTemplate>
+                    <oxy:TrackerControl Position="{Binding Position}" LineExtents="{Binding PlotModel.PlotArea}"
+                                        Background="{DynamicResource SurfaceHoverBrush}" BorderBrush="{DynamicResource AxisBrush}" BorderThickness="1"
+                                        LineStroke="{DynamicResource TextMutedBrush}" HorizontalLineVisibility="Collapsed" CornerRadius="6">
+                        <oxy:TrackerControl.Content>
+                            <TextBlock Text="{Binding}" Margin="10,6" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" LineHeight="18" />
+                        </oxy:TrackerControl.Content>
+                    </oxy:TrackerControl>
+                </ControlTemplate>
+            </oxy:PlotView.DefaultTrackerTemplate>
+        </oxy:PlotView>
+        <TextBlock Text="表示できるデータがありません" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}, FallbackValue=Visible}" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- ライトテーマの色。キーは Colors.Dark.xaml と同じにする。
+         背景（薄いグレー）と白いカードの差・枠線・文字のコントラストをはっきりさせている。
+         グラフの色は Charts/ChartTheme.cs で定義している。 -->
+    <SolidColorBrush x:Key="PageBrush" Color="#EEF1F5" />
+    <SolidColorBrush x:Key="SidebarBrush" Color="#E4E8EE" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#EDF1F6" />
+    <SolidColorBrush x:Key="InputBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TileBrush" Color="#F5F7FA" />
+    <SolidColorBrush x:Key="HairlineBrush" Color="#E1E5EB" />
+    <SolidColorBrush x:Key="CardBorderBrush" Color="#D5DBE3" />
+    <SolidColorBrush x:Key="AxisBrush" Color="#B4BCC7" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#15181C" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#3A414B" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="#5C6470" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#1F6FD1" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#1858A8" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#2E1F6FD1" />
+    <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="StatusGoodBrush" Color="#0CA30C" />
+    <SolidColorBrush x:Key="StatusWarningBrush" Color="#E09A00" />
+    <SolidColorBrush x:Key="StatusSeriousBrush" Color="#E0703F" />
+    <SolidColorBrush x:Key="StatusCriticalBrush" Color="#D03B3B" />
+    <SolidColorBrush x:Key="WarningBannerBrush" Color="#FFF1CC" />
+    <SolidColorBrush x:Key="ErrorBannerBrush" Color="#FBE1E1" />
+    <SolidColorBrush x:Key="InfoBannerBrush" Color="#DDEAFB" />
+    <SolidColorBrush x:Key="AlternateRowBrush" Color="#F7F9FB" />
+</ResourceDictionary>

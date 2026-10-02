@@ -1,0 +1,5 @@
+{
+  "clientId": "ここに Oura に登録したアプリの Client ID",
+  "clientSecret": "ここに Client Secret",
+  "redirectUri": "http://localhost:8765/callback"
+}

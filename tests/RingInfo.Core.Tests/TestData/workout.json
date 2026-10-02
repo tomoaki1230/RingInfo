@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "id": "workout-0-2026-9-24",
+      "activity": "running",
+      "calories": 100.0,
+      "day": "2026-09-24",
+      "distance": 10.0,
+      "end_datetime": "2026-09-24T00:00:00.000+00:00",
+      "intensity": "hard",
+      "label": "None",
+      "source": "workout_heart_rate",
+      "start_datetime": "2026-09-24T00:00:00.000+00:00"
+    },
+    {
+      "id": "workout-1-2026-9-25",
+      "activity": "walking",
+      "calories": 10.0,
+      "day": "2026-09-25",
+      "distance": 1.0,
+      "end_datetime": "2026-09-25T00:00:00.000+00:00",
+      "intensity": "easy",
+      "label": "My Workout",
+      "source": "confirmed",
+      "start_datetime": "2026-09-25T00:00:00.000+00:00"
+    }
+  ],
+  "next_token": null
+}

@@ -1,0 +1,19 @@
+# ビルド成果物
+bin/
+obj/
+dist/
+publish/
+TestResults/
+*.user
+*.suo
+.vs/
+
+# 作業用フォルダ
+temp/
+backup/
+
+# Windows のゾーン情報ファイル
+*:Zone.Identifier
+
+# 配布用に組み込む Oura API アプリの情報（Client Secret を含むためコミットしない）
+src/RingInfo.App/oura-client.json

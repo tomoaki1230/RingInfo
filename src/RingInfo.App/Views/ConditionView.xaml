@@ -1,0 +1,107 @@
+<UserControl x:Class="RingInfo.App.Views.ConditionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:RingInfo.App.ViewModels"
+             xmlns:controls="clr-namespace:RingInfo.App.Controls"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:ConditionPageViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,8,20,12">
+        <StackPanel x:Name="PageContent" Background="{DynamicResource PageBrush}">
+            <controls:DayNavigator Margin="0,0,0,12" HorizontalAlignment="Left" />
+
+            <!-- 選択した日 -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="360" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <ContentControl Content="{Binding ScoreCard}" />
+                        <Border Style="{StaticResource Hairline}" />
+                        <TextBlock Text="コンディションの寄与要素" Style="{StaticResource SectionTitleText}" Margin="0,0,0,4" />
+                        <ItemsControl ItemsSource="{Binding Contributors}" />
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding Tiles}" ItemsPanel="{StaticResource TileGrid4}" Margin="0,0,-12,0" />
+                        <TextBlock Text="コンディションスコアの推移" Style="{StaticResource SectionTitleText}" Margin="0,4,0,0" />
+                        <controls:ChartHost DataContext="{Binding ScoreTrend}" Height="220" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- 期間の推移（指標ごとに別のグラフ） -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="体温偏差（℃・基準値との差）" Style="{StaticResource SectionTitleText}" />
+                        <controls:ChartHost DataContext="{Binding TemperatureChart}" Height="220" />
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="高ストレス・高回復の時間" Style="{StaticResource SectionTitleText}" />
+                        <controls:ChartHost DataContext="{Binding StressChart}" Height="220" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="安静時心拍数（bpm）" Style="{StaticResource SectionTitleText}" />
+                        <controls:ChartHost DataContext="{Binding RestingHeartRateChart}" Height="200" />
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="平均 HRV（ms）" Style="{StaticResource SectionTitleText}" />
+                        <controls:ChartHost DataContext="{Binding HrvChart}" Height="200" />
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="4" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="血中酸素（%）" Style="{StaticResource SectionTitleText}" />
+                        <controls:ChartHost DataContext="{Binding Spo2Chart}" Height="200" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="日別データ（行を選ぶとその日を表示）" Style="{StaticResource SectionTitleText}" Margin="0,0,0,8" />
+                    <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}" controls:ScrollForwarding.IsEnabled="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日付" Binding="{Binding DayText}" ElementStyle="{StaticResource TextCell}" HeaderStyle="{StaticResource LeftHeader}" Width="110" />
+                            <DataGridTextColumn Header="スコア" Binding="{Binding Score}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="体温" Binding="{Binding Temperature}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="安静時心拍" Binding="{Binding RestingHeartRate}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="HRV" Binding="{Binding Hrv}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="SpO2" Binding="{Binding Spo2}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="呼吸の乱れ" Binding="{Binding BreathingDisturbance}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="高ストレス" Binding="{Binding StressHigh}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="高回復" Binding="{Binding RecoveryHigh}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="まとめ" Binding="{Binding Summary}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

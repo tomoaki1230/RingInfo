@@ -1,0 +1,318 @@
+<UserControl x:Class="RingInfo.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:RingInfo.App.ViewModels"
+             xmlns:controls="clr-namespace:RingInfo.App.Controls"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:SettingsPageViewModel}">
+    <UserControl.Resources>
+        <!-- 手順番号の丸 -->
+        <Style x:Key="StepNumber" TargetType="Border">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0,0,14,0" />
+        </Style>
+        <Style x:Key="StepNumberText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="StepTitle" TargetType="TextBlock" BasedOn="{StaticResource SectionTitleText}">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Margin" Value="0,3,0,6" />
+        </Style>
+        <Style x:Key="DoneBadge" TargetType="TextBlock">
+            <Setter Property="Text" Value="✔ 完了" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusGoodBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="10,6,0,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,8,20,12">
+        <StackPanel x:Name="PageContent" Background="{DynamicResource PageBrush}" MaxWidth="980" HorizontalAlignment="Left">
+
+            <!-- ===================== 連携状態 ===================== -->
+            <!--
+              1 行目: 状態（左）とボタン（右）。2 行目以降: 注意書きなどを全幅で表示する
+              （注意書きをボタンと同じ行に置くと、狭い幅で文字がボタンの下に入り込んでいた）
+            -->
+            <Border Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="10" Height="10" VerticalAlignment="Center">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource StatusWarningBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Fill" Value="{DynamicResource StatusGoodBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Text="{Binding ConnectionStatus}" Style="{StaticResource SectionTitleText}" FontSize="16" Margin="10,0,0,0"
+                                       VerticalAlignment="Center" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding AccountText}" Style="{StaticResource BodyText}" Margin="20,4,0,0"
+                                   Visibility="{Binding AccountText, Converter={StaticResource NullToVisibility}}" />
+                        <TextBlock Text="{Binding TokenExpiryText}" Style="{StaticResource CaptionText}" Margin="20,2,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding TokenExpiryText, Converter={StaticResource NullToVisibility}}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button Style="{StaticResource PrimaryButton}" Content="ダッシュボードを開く" Command="{Binding OpenDashboardCommand}"
+                                Visibility="{Binding ShowConnectedPanel, Converter={StaticResource BoolToVisibility}}" />
+                        <Button Content="連携を解除" Command="{Binding DisconnectCommand}" Margin="8,0,0,0"
+                                Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+                        <TextBlock Style="{StaticResource BodyText}" Margin="20,6,0,0"
+                                   Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"
+                                   Text="{Binding IntroText}" />
+                        <!-- Oura メンバーシップについての注意（常に表示） -->
+                        <Grid Margin="20,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE7BA;" Style="{StaticResource IconText}" FontSize="13"
+                                       Foreground="{DynamicResource StatusWarningBrush}" VerticalAlignment="Top" Margin="0,3,8,0" />
+                            <TextBlock Grid.Column="1" Text="{Binding MembershipNotice}" Style="{StaticResource BodyText}" />
+                        </Grid>
+                        <Button Style="{StaticResource LinkButton}" Content="連携の手順を表示 / 隠す" Command="{Binding ToggleGuideCommand}"
+                                HorizontalAlignment="Left" Margin="20,8,0,0"
+                                Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- メッセージ -->
+            <Border CornerRadius="8" Padding="14,10" Margin="0,0,0,16"
+                    Visibility="{Binding Message, Converter={StaticResource NullToVisibility}}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource InfoBannerBrush}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsError}" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ErrorBannerBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="13" />
+            </Border>
+
+            <StackPanel Visibility="{Binding IsGuideVisible, Converter={StaticResource BoolToVisibility}}">
+
+              <!-- 手順 1・2 は自分で Oura にアプリを登録する場合のみ（配布版では不要） -->
+              <StackPanel Visibility="{Binding ShowRegistrationSteps, Converter={StaticResource BoolToVisibility}}">
+                <!-- ===================== 手順 1 ===================== -->
+                <Border Style="{StaticResource Card}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Style="{StaticResource StepNumber}">
+                            <TextBlock Text="1" Style="{StaticResource StepNumberText}" />
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Oura の開発者ページで「アプリ」を登録する" Style="{StaticResource StepTitle}" />
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="Oura のデータを読み出すには、Oura の開発者ページで「このアプリに読み取りを許可する」ための登録が必要です（無料・1 回だけ）。下のボタンでページを開き、Oura アカウントでログインしてから「New Application」を押してください。" />
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,4">
+                                <Button Style="{StaticResource PrimaryButton}" Command="{Binding OpenDeveloperPortalCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE8A7;" Style="{StaticResource IconText}" FontSize="13" />
+                                        <TextBlock Text="開発者ページを開く" Margin="8,0,0,0" />
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock Text="{Binding DeveloperPortal}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                            </StackPanel>
+
+                            <TextBlock Text="「New Application」の画面には、次のように入力します。" Style="{StaticResource BodyText}" Margin="0,14,0,8" />
+                            <Border Background="{DynamicResource TileBrush}" CornerRadius="8" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Padding="14,6">
+                                <ItemsControl ItemsSource="{Binding RegistrationFields}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:RegistrationField}">
+                                            <Grid Margin="0,7">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="230" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Label}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"
+                                                           TextWrapping="Wrap" Margin="0,4,12,0" />
+                                                <StackPanel Grid.Column="1">
+                                                    <StackPanel Orientation="Horizontal" Visibility="{Binding CanCopy, Converter={StaticResource BoolToVisibility}}" Margin="0,0,0,4">
+                                                        <Border Background="{DynamicResource InputBrush}" BorderBrush="{DynamicResource AxisBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                            <TextBlock Text="{Binding DisplayValue}" FontFamily="Consolas, Yu Gothic UI" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                        </Border>
+                                                        <Button Content="コピー" Margin="8,0,0,0" Padding="12,4"
+                                                                Command="{Binding DataContext.CopyTextCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding Value}" />
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding Hint}" Style="{StaticResource BodyText}" Margin="0,3,0,0" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                            <TextBlock Style="{StaticResource BodyText}" Margin="0,12,0,0"
+                                       Text="作成が終わると、アプリの詳細画面に「Client ID」と「Client Secret」が表示されます。そのページは開いたまま、手順 2 に進んでください。" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- ===================== 手順 2 ===================== -->
+                <Border Style="{StaticResource Card}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Style="{StaticResource StepNumber}">
+                            <TextBlock Text="2" Style="{StaticResource StepNumberText}" />
+                        </Border>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Client ID と Client Secret を貼り付ける" Style="{StaticResource StepTitle}" />
+                                <TextBlock Style="{StaticResource DoneBadge}" Visibility="{Binding HasCredentials, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="手順 1 で作成したアプリの詳細画面から、2 つの値をコピーして下の欄に貼り付けます。Client Secret はパスワードと同じように扱い、他人に見せないでください。" />
+                            <Grid Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Client ID" Style="{StaticResource BodyText}" VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1" Text="{Binding ClientId, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" />
+                                <TextBlock Grid.Row="1" Text="Client Secret" Style="{StaticResource BodyText}" VerticalAlignment="Center" />
+                                <PasswordBox Grid.Row="1" Grid.Column="1" Margin="0,4"
+                                             controls:PasswordBoxBinding.Password="{Binding ClientSecret, Mode=TwoWay}" />
+                            </Grid>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+              </StackPanel>
+
+                <!-- ===================== 手順 3（配布版ではこれだけ） ===================== -->
+                <Border Style="{StaticResource Card}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Style="{StaticResource StepNumber}"
+                                Visibility="{Binding ShowRegistrationSteps, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="3" Style="{StaticResource StepNumberText}" />
+                        </Border>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding ConnectStepTitle}" Style="{StaticResource StepTitle}" />
+                                <TextBlock Style="{StaticResource DoneBadge}" Visibility="{Binding ShowConnectedPanel, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource BodyText}" Text="下のボタンを押すと、ブラウザで Oura のページが開きます。そこで次の操作をしてください。" />
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Style="{StaticResource BodyText}" Text="① Oura アカウントでログインします（メールに届く確認コードの入力を求められることがあります）。" />
+                                <TextBlock Style="{StaticResource BodyText}" Text="② 表示されたデータの種類を確認し、アクセスを許可するボタンを押します。" />
+                                <TextBlock Style="{StaticResource BodyText}" Text="③ ブラウザに「連携しました」と表示されたら、そのタブを閉じてこのアプリに戻ります。データは自動で読み込まれます。" />
+                            </StackPanel>
+
+                            <Button Style="{StaticResource PrimaryButton}" Content="{Binding ConnectButtonText}" Command="{Binding ConnectCommand}"
+                                    HorizontalAlignment="Left" Margin="0,14,0,0" Padding="20,9"
+                                    Visibility="{Binding ShowConnectButton, Converter={StaticResource BoolToVisibility}}" />
+
+                            <!-- 許可を待っている間 -->
+                            <Border Background="{DynamicResource InfoBannerBrush}" CornerRadius="8" Padding="16,12" Margin="0,14,0,0"
+                                    Visibility="{Binding IsConnecting, Converter={StaticResource BoolToVisibility}}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE916;" Style="{StaticResource IconText}" Foreground="{DynamicResource AccentHoverBrush}" />
+                                        <TextBlock Text="ブラウザで Oura の許可を待っています…（最大 5 分）" FontSize="14" FontWeight="SemiBold" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource BodyText}" Margin="0,8,0,0"
+                                               Text="ブラウザで上の ①〜③ を行ってください。ブラウザが開かない・閉じてしまった場合は「もう一度ブラウザで開く」を押してください。" />
+                                    <TextBlock Style="{StaticResource BodyText}" Margin="0,4,0,0"
+                                               Visibility="{Binding ShowRegistrationSteps, Converter={StaticResource BoolToVisibility}}"
+                                               Text="ブラウザに redirect_uri に関するエラーが出た場合は、手順 1 の「Redirect URIs」が正しく登録されているか確認し、キャンセルしてからやり直してください。" />
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Button Content="もう一度ブラウザで開く" Command="{Binding ReopenBrowserCommand}" />
+                                        <Button Content="キャンセル" Command="{Binding CancelConnectCommand}" Margin="8,0,0,0" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- ===================== 表示（テーマ） ===================== -->
+            <Border Style="{StaticResource Card}">
+                <DockPanel>
+                    <ListBox DockPanel.Dock="Right" Style="{StaticResource SegmentedListBox}" VerticalAlignment="Center"
+                             ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:ThemeOption}">
+                                <TextBlock Text="{Binding Label}" FontSize="13" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel>
+                        <TextBlock Text="画面のテーマ" Style="{StaticResource SectionTitleText}" />
+                        <TextBlock Style="{StaticResource CaptionText}" TextWrapping="Wrap"
+                                   Text="「システムに合わせる」は Windows のライト／ダーク設定に連動します。" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- 配布版で、自分で登録したアプリに切り替える（上級者向け） -->
+            <Button Style="{StaticResource LinkButton}" Content="{Binding CustomClientToggleText}" Command="{Binding ToggleCustomClientCommand}"
+                    HorizontalAlignment="Left" Margin="4,0,0,12"
+                    Visibility="{Binding HasBuiltInClient, Converter={StaticResource BoolToVisibility}}" />
+
+            <!-- ===================== 詳細設定 ===================== -->
+            <Button Style="{StaticResource LinkButton}" Content="詳細設定を表示 / 隠す" Command="{Binding ToggleAdvancedCommand}"
+                    HorizontalAlignment="Left" Margin="4,0,0,12" />
+            <Border Style="{StaticResource Card}" Visibility="{Binding IsAdvancedVisible, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                  <StackPanel Visibility="{Binding ShowRegistrationSteps, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="リダイレクト URI" Style="{StaticResource SectionTitleText}" />
+                    <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,8"
+                               Text="通常は変更不要です。ポート 8765 を他のソフトが使っていて連携できない場合のみ、ポート番号を変更してください。その場合は開発者ページの Redirect URIs も同じ値に変更が必要です。" />
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Content="既定に戻す" Command="{Binding ResetRedirectUriCommand}" Margin="8,0,0,0" />
+                        <Button DockPanel.Dock="Right" Content="保存" Command="{Binding SaveCommand}" Margin="8,0,0,0" />
+                        <TextBox Text="{Binding RedirectUri, UpdateSourceTrigger=PropertyChanged}" />
+                    </DockPanel>
+
+                    <Border Style="{StaticResource Hairline}" Margin="0,18,0,14" />
+                  </StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Content="フォルダーを開く" Command="{Binding OpenSettingsFolderCommand}" VerticalAlignment="Center" />
+                        <StackPanel>
+                            <TextBlock Text="設定ファイル" Style="{StaticResource SectionTitleText}" />
+                            <TextBlock Text="{Binding SettingsFilePath, TargetNullValue=（保存しないモード）}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
+                            <TextBlock Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                       Text="Client Secret とトークンは Windows のユーザー単位で暗号化して保存しています。" />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

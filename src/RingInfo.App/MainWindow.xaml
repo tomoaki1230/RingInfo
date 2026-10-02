@@ -1,0 +1,174 @@
+<Window x:Class="RingInfo.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:RingInfo.App.ViewModels"
+        xmlns:views="clr-namespace:RingInfo.App.Views"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
+        Title="RingInfo - Oura Ring ビューアー"
+        Icon="Assets/RingInfo.ico"
+        Width="1360" Height="900" MinWidth="1080" MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource PageBrush}"
+        FontFamily="{StaticResource UiFont}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===================== サイドバー ===================== -->
+        <Border Background="{DynamicResource SidebarBrush}" BorderBrush="{DynamicResource HairlineBrush}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,22,16,24">
+                    <Image Source="Assets/RingInfo.png" Width="32" Height="32" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="RingInfo" FontSize="17" FontWeight="SemiBold" />
+                        <TextBlock Text="Oura Ring ビューアー" Style="{StaticResource CaptionText}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="20,12,16,18">
+                    <Border HorizontalAlignment="Left" CornerRadius="14" Padding="12,5" Background="{DynamicResource SurfaceHoverBrush}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="9" Height="9" VerticalAlignment="Center">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource StatusGoodBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDemo}" Value="True">
+                                                <Setter Property="Fill" Value="{DynamicResource StatusWarningBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Text="{Binding ModeText}" FontSize="14" Margin="8,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Text="{Binding StatusText}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,10,0,0" TextWrapping="Wrap"
+                               Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" />
+                    <!-- 読み込み中: 回転する円と、いま行っている処理（「最終更新」の位置に表示） -->
+                    <StackPanel Orientation="Horizontal" Margin="2,10,0,0"
+                                Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}">
+                        <ContentControl Style="{StaticResource Spinner}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding BusyText}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="8,0,0,0"
+                                   VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="160" />
+                    </StackPanel>
+                </StackPanel>
+
+                <ListBox Style="{StaticResource NavListBox}" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:PageViewModel}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding IconGlyph}" Style="{StaticResource IconText}" Width="20" />
+                                <TextBlock Text="{Binding Title}" FontSize="14" Margin="10,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- ===================== メイン領域 ===================== -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 上部バー: ページ名・期間の選択・更新 -->
+            <Grid Margin="28,18,28,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding SelectedPage.Title}" Style="{StaticResource PageTitleText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0"
+                            Visibility="{Binding ShowPeriodControls, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="期間" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ListBox Style="{StaticResource SegmentedListBox}" ItemsSource="{Binding RangeOptions}" SelectedItem="{Binding SelectedRange}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:RangeOption}">
+                                <TextBlock Text="{Binding Label}" FontSize="13" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Style="{StaticResource IconButton}" Content="&#xE76B;" Command="{Binding PreviousRangeCommand}" Margin="12,0,0,0" ToolTip="前の期間" />
+                    <TextBlock Text="{Binding RangeText}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="4,0" />
+                    <Button Style="{StaticResource IconButton}" Content="&#xE76C;" Command="{Binding NextRangeCommand}" ToolTip="次の期間" />
+                    <Button Content="今日" Command="{Binding GoToTodayCommand}" Margin="6,0,0,0" ToolTip="今日までの期間を表示" />
+                    <Button Command="{Binding RefreshCommand}" Margin="8,0,0,0" ToolTip="Oura から最新のデータを取得">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE72C;" Style="{StaticResource IconText}" FontSize="13" />
+                            <TextBlock Text="更新" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- 読み込み中の表示 -->
+            <!-- 読み込み中: 流れ続ける帯（止まって見えないよう、帯の幅と色の差をはっきりさせている） -->
+            <ContentControl Grid.Row="1" Style="{StaticResource LoadingBar}" Margin="28,0"
+                            Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+
+            <!-- お知らせ（エラー・警告・デモ表示） -->
+            <StackPanel Grid.Row="2" Margin="28,8,28,0">
+                <Border Background="{DynamicResource ErrorBannerBrush}" CornerRadius="8" Padding="14,10" Margin="0,0,0,8"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibility}}">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left" Text="&#xE783;" Style="{StaticResource IconText}" Foreground="{DynamicResource StatusCriticalBrush}" Margin="0,0,10,0" />
+                        <Button DockPanel.Dock="Right" Content="設定を開く" Command="{Binding OpenSettingsCommand}" Margin="12,0,0,0"
+                                Visibility="{Binding NeedsReconnect, Converter={StaticResource BoolToVisibility}}" />
+                        <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="13" />
+                    </DockPanel>
+                </Border>
+                <Border Background="{DynamicResource WarningBannerBrush}" CornerRadius="8" Padding="14,10" Margin="0,0,0,8"
+                        Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibility}}">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource IconText}" Foreground="{DynamicResource StatusWarningBrush}" Margin="0,0,10,0" />
+                        <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE711;" Command="{Binding DismissWarningCommand}" ToolTip="閉じる" />
+                        <TextBlock Text="{Binding WarningMessage}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </DockPanel>
+                </Border>
+                <Border Background="{DynamicResource InfoBannerBrush}" CornerRadius="8" Padding="14,10" Margin="0,0,0,8"
+                        Visibility="{Binding ShowDemoBanner, Converter={StaticResource BoolToVisibility}}">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left" Text="&#xE946;" Style="{StaticResource IconText}" Foreground="{DynamicResource AccentHoverBrush}" Margin="0,0,10,0" />
+                        <Button DockPanel.Dock="Right" Content="Oura と連携する" Command="{Binding OpenSettingsCommand}" Margin="12,0,0,0" />
+                        <TextBlock Text="デモデータを表示しています。設定画面で Oura と連携すると、あなたのリングのデータを表示できます。"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- ページ（グラフを保持するため、切り替えは表示・非表示で行う）。読み込み中は前のデータを薄く表示する -->
+            <Grid Grid.Row="3">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Opacity" Value="1" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="Opacity" Value="0.55" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <views:DashboardView DataContext="{Binding Dashboard}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                <views:SleepView DataContext="{Binding Sleep}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                <views:ActivityView DataContext="{Binding Activity}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                <views:ConditionView DataContext="{Binding Condition}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                <views:HeartRateView DataContext="{Binding HeartRate}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                <views:SettingsView DataContext="{Binding SettingsPage}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                <views:HelpView DataContext="{Binding Help}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

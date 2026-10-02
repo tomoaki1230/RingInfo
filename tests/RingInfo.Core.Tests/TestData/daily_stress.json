@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": "daily_stress-0-2026-9-24",
+      "day": "2026-09-24",
+      "day_summary": "normal",
+      "recovery_high": 80,
+      "stress_high": 15
+    },
+    {
+      "id": "daily_stress-1-2026-9-25",
+      "day": "2026-09-25",
+      "day_summary": "stressful",
+      "recovery_high": 12,
+      "stress_high": 340
+    }
+  ],
+  "next_token": null
+}

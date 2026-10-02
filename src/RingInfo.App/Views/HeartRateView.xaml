@@ -1,0 +1,53 @@
+<UserControl x:Class="RingInfo.App.Views.HeartRateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:RingInfo.App.ViewModels"
+             xmlns:controls="clr-namespace:RingInfo.App.Controls"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:HeartRatePageViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,8,20,12">
+        <StackPanel x:Name="PageContent" Background="{DynamicResource PageBrush}">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <controls:DayNavigator />
+                <Button Style="{StaticResource IconButton}" Content="&#xE72C;" Command="{Binding ReloadCommand}" ToolTip="この日の心拍数を再取得" Margin="8,0,0,0" />
+                <TextBlock Text="読み込み中…" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="8,0,0,0"
+                           Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+
+            <Border Background="{DynamicResource ErrorBannerBrush}" CornerRadius="8" Padding="14,10" Margin="0,0,0,12"
+                    Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibility}}">
+                <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" FontSize="13" />
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <ItemsControl ItemsSource="{Binding Tiles}" ItemsPanel="{StaticResource TileGrid6}" Margin="0,0,-12,-12" />
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="1 日の心拍数（bpm）" Style="{StaticResource SectionTitleText}" />
+                    <controls:ChartHost DataContext="{Binding Chart}" Height="420" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="日別データ（睡眠中の値。行を選ぶとその日の心拍数を表示）" Style="{StaticResource SectionTitleText}" Margin="0,0,0,8" />
+                    <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}" controls:ScrollForwarding.IsEnabled="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日付" Binding="{Binding DayText}" ElementStyle="{StaticResource TextCell}" HeaderStyle="{StaticResource LeftHeader}" Width="110" />
+                            <DataGridTextColumn Header="安静時心拍数（最低・bpm）" Binding="{Binding RestingHeartRate}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="睡眠中の平均心拍数（bpm）" Binding="{Binding AverageHeartRate}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                            <DataGridTextColumn Header="平均 HRV（ms）" Binding="{Binding Hrv}" ElementStyle="{StaticResource NumberCell}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="4,0,0,12"
+                       Text="心拍数は日中はおよそ 5 分ごと、睡眠中はより細かい間隔で記録されます。データが表示されない時間帯は、リングを外していたか、まだ Oura アプリと同期されていない可能性があります。" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

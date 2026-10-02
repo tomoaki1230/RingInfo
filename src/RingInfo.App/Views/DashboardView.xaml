@@ -1,0 +1,69 @@
+<UserControl x:Class="RingInfo.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:RingInfo.App.ViewModels"
+             xmlns:controls="clr-namespace:RingInfo.App.Controls"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:DashboardPageViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,8,20,12">
+        <StackPanel x:Name="PageContent" Background="{DynamicResource PageBrush}">
+            <TextBlock Text="{Binding PeriodText}" Style="{StaticResource CaptionText}" Margin="0,0,0,12" />
+
+            <!-- 3 つのスコア -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}">
+                    <ContentControl Content="{Binding SleepCard}" />
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <ContentControl Content="{Binding ReadinessCard}" />
+                </Border>
+                <Border Grid.Column="4" Style="{StaticResource Card}">
+                    <ContentControl Content="{Binding ActivityCard}" />
+                </Border>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="340" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <!-- 主な指標 -->
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="主な指標（最新）" Style="{StaticResource SectionTitleText}" Margin="0,0,0,12" />
+                            <ItemsControl ItemsSource="{Binding Tiles}" ItemsPanel="{StaticResource TileGrid4}" Margin="0,0,-12,-12" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- スコアの推移 -->
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="スコアの推移" Style="{StaticResource SectionTitleText}" />
+                            <controls:ChartHost DataContext="{Binding ScoreTrend}" Height="280" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- リングの情報 -->
+                <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="リング" Style="{StaticResource SectionTitleText}" Margin="0,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding RingInfo}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

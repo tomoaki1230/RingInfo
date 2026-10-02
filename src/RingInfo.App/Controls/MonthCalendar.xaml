@@ -1,0 +1,103 @@
+<UserControl x:Class="RingInfo.App.Controls.MonthCalendar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:RingInfo.App.Controls">
+    <UserControl.Resources>
+        <!--
+          日付のボタンの色分け:
+          ・選べる日（取得期間内）… 濃い文字 + 薄いアクセント色の背景（月をまたいでも同じ）
+          ・選択中の日 … アクセント色の背景 + 白文字
+          ・選べない日 … 薄い文字のみ（背景なし、押せない）
+          ・今日 … 枠線
+        -->
+        <Style x:Key="DayButton" TargetType="Button">
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Margin" Value="1" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="6"
+                                BorderThickness="1.5" BorderBrush="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource TextMutedBrush}" />
+                            </DataTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSelectable}" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Setter Property="Opacity" Value="0.55" />
+                    <Setter Property="Cursor" Value="Arrow" />
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                    <Setter Property="Focusable" Value="False" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource AxisBrush}" BorderThickness="1"
+            CornerRadius="10" Padding="10" Margin="0,4,8,8">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="3" Opacity="0.25" />
+        </Border.Effect>
+        <StackPanel>
+            <DockPanel Margin="0,0,0,6">
+                <Button x:Name="PreviousMonthButton" DockPanel.Dock="Left" Style="{StaticResource IconButton}" Content="&#xE76B;"
+                        Click="OnPreviousMonth" ToolTip="前の月" />
+                <Button x:Name="NextMonthButton" DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE76C;"
+                        Click="OnNextMonth" ToolTip="次の月" />
+                <TextBlock x:Name="MonthTitle" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </DockPanel>
+
+            <UniformGrid Columns="7" Margin="0,0,0,2">
+                <TextBlock Text="日" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+                <TextBlock Text="月" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+                <TextBlock Text="火" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+                <TextBlock Text="水" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+                <TextBlock Text="木" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+                <TextBlock Text="金" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+                <TextBlock Text="土" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+            </UniformGrid>
+
+            <ItemsControl x:Name="DayItems">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="7" Rows="6" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:CalendarDay}">
+                        <Button Style="{StaticResource DayButton}" Content="{Binding Text}" Click="OnDayClick" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock x:Name="RangeText" Style="{StaticResource CaptionText}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+        </StackPanel>
+    </Border>
+</UserControl>

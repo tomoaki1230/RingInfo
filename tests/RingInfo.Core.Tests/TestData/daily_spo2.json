@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "daily_spo2-1-2026-9-24",
+      "breathing_disturbance_index": 1,
+      "day": "2026-09-24",
+      "spo2_percentage": {
+        "average": 93.0
+      }
+    },
+    {
+      "id": "daily_spo2-0-2026-9-25",
+      "breathing_disturbance_index": 1,
+      "day": "2026-09-25",
+      "spo2_percentage": {
+        "average": 97.0
+      }
+    }
+  ],
+  "next_token": null
+}

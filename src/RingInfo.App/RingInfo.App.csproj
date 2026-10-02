@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>RingInfo</AssemblyName>
+    <RootNamespace>RingInfo.App</RootNamespace>
+    <ApplicationIcon>Assets\RingInfo.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyTitle>RingInfo - Oura Ring ビューアー</AssemblyTitle>
+  </PropertyGroup>
+
+  <!-- 配布用 exe（dotnet publish）の既定設定: .NET 8 Desktop Runtime を利用する単一ファイル -->
+  <PropertyGroup>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="OxyPlot.Wpf" Version="2.2.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RingInfo.Core\RingInfo.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="RingInfo.App.Tests" />
+  </ItemGroup>
+
+  <!-- 使用しているライブラリのライセンス全文（ヘルプで表示する） -->
+  <ItemGroup>
+    <EmbeddedResource Include="Licenses\*.txt" LogicalName="RingInfo.Licenses.%(Filename).txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\RingInfo.ico" />
+    <Resource Include="Assets\RingInfo.png" />
+  </ItemGroup>
+
+  <!--
+    配布用: 配布者が Oura に登録したアプリの情報（oura-client.json）があれば exe に組み込む。
+    利用者はアプリ登録をせずに「Oura と連携する」だけで使えるようになる。
+    oura-client.json は .gitignore 対象（リポジトリに Client Secret を含めないため）。
+  -->
+  <ItemGroup Condition="Exists('oura-client.json')">
+    <EmbeddedResource Include="oura-client.json" LogicalName="RingInfo.OuraClient.json" />
+  </ItemGroup>
+
+</Project>
