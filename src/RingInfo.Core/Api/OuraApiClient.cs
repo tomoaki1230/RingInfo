@@ -20,8 +20,12 @@ public sealed class OuraApiClient : IOuraDataSource
     /// <summary>ページングの上限（無限ループ防止）</summary>
     private const int MaxPages = 100;
 
-    /// <summary>同時に送るリクエストの上限（一度に大量に送ってリクエスト上限にかからないようにする）</summary>
-    public const int MaxConcurrentRequests = 4;
+    /// <summary>
+    /// 同時に送るリクエストの上限。
+    /// 1 回の読み込みで必要な分（約 10 件）は一度に送る（4 件に絞ると 3 回に分かれて待ち時間が約 3 倍になった）。
+    /// 連打による大量送信は、画面側の間引き（期間の切り替えから 0.4 秒待って読み込む）で防ぐ。
+    /// </summary>
+    public const int MaxConcurrentRequests = 10;
 
     /// <summary>429 のときに待ってから再試行する待ち時間の上限（これより長い場合はエラーにする）</summary>
     private static readonly TimeSpan MaxRetryAfter = TimeSpan.FromSeconds(10);

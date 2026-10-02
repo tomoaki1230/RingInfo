@@ -47,7 +47,7 @@ Oura API はアプリごとの登録（OAuth2）が必要です（個人用ア�
 1. [Oura の開発者ページ](https://developer.ouraring.com/applications) にログインし、「New Application」を作成します。
    - Display Name: `RingInfo`
    - Contact Email: Oura に登録しているメールアドレス
-   - Website / Privacy Policy / Terms of Service: `https://github.com/tomoaki1230`（RingInfo 作者の GitHub。ご自身の URL が無くてもこのまま使えます）
+   - Website / Privacy Policy / Terms of Service: `https://github.com/tomoaki1230/RingInfo/`（RingInfo の GitHub ページ。ご自身の URL が無くてもこのまま使えます）
    - Redirect URIs: `http://localhost:8765/callback`（1 文字も変えずに入力）
    - Scopes: すべてチェック、API Agreement に同意して作成
 2. 作成したアプリの Client ID と Client Secret を、RingInfo の「設定」に貼り付けます。
@@ -101,6 +101,10 @@ tests/
 tools/make_icon.py      アプリアイコンの生成スクリプト（元画像: tools/icon-source.png）
 docs/screenshots/       README 用の画像
 ```
+
+## 変更履歴
+
+[CHANGELOG.md](CHANGELOG.md) を参照してください。
 
 ## ライセンス
 

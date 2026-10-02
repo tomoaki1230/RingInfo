@@ -287,29 +287,40 @@
          ・LoadingBar: 帯が左右に流れ続ける進捗バー
          ・Spinner: 回転する円弧
          ============================================================ -->
+    <!--
+      帯の位置を要素の幅に対する割合（RelativeTransform）で動かすため、ウィンドウの幅に関係なく途切れずに流れ続ける。
+      （以前は移動距離を固定値にしていたため、狭いウィンドウでは帯が画面外にいる時間があり、止まって見えた）
+    -->
     <Style x:Key="LoadingBar" TargetType="ContentControl">
         <Setter Property="Height" Value="3" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ContentControl">
-                    <Grid x:Name="Root" ClipToBounds="True" Background="{DynamicResource AccentSoftBrush}">
-                        <Border x:Name="Segment" Width="220" HorizontalAlignment="Left" CornerRadius="2" Background="{DynamicResource AccentBrush}">
-                            <Border.RenderTransform>
-                                <TranslateTransform x:Name="Shift" X="-220" />
-                            </Border.RenderTransform>
-                        </Border>
+                    <Grid Background="{DynamicResource AccentSoftBrush}">
+                        <!-- 色はテーマのアクセント色。動く部分は透明度のマスクで表す -->
+                        <Rectangle x:Name="Bar" Fill="{DynamicResource AccentBrush}">
+                            <Rectangle.OpacityMask>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <LinearGradientBrush.RelativeTransform>
+                                        <TranslateTransform X="-0.6" />
+                                    </LinearGradientBrush.RelativeTransform>
+                                    <GradientStop Offset="0" Color="Transparent" />
+                                    <GradientStop Offset="0.3" Color="Transparent" />
+                                    <GradientStop Offset="0.5" Color="Black" />
+                                    <GradientStop Offset="0.7" Color="Transparent" />
+                                    <GradientStop Offset="1" Color="Transparent" />
+                                </LinearGradientBrush>
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
                             <BeginStoryboard>
                                 <Storyboard RepeatBehavior="Forever">
-                                    <DoubleAnimation Storyboard.TargetName="Shift" Storyboard.TargetProperty="X"
-                                                     From="-220" To="1600" Duration="0:0:1.4">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut" />
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
+                                    <DoubleAnimation Storyboard.TargetName="Bar"
+                                                     Storyboard.TargetProperty="(Rectangle.OpacityMask).(Brush.RelativeTransform).(TranslateTransform.X)"
+                                                     From="-0.6" To="0.6" Duration="0:0:1.1" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>

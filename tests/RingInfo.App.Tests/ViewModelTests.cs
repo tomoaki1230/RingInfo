@@ -119,7 +119,7 @@ public class SettingsPageViewModelTests
         Assert.False(Assert.Single(viewModel.RegistrationFields, f => f.Label == "Contact Email").CanCopy);
         Assert.All(
             viewModel.RegistrationFields.Where(f => f.Label is "Website" or "Privacy Policy" or "Terms of Service"),
-            f => Assert.Equal("https://github.com/tomoaki1230", f.Value));
+            f => Assert.Equal("https://github.com/tomoaki1230/RingInfo/", f.Value));
         Assert.True(viewModel.IsGuideVisible);
         Assert.Equal("https://developer.ouraring.com/applications", SettingsPageViewModel.DeveloperPortalUrl);
 
@@ -329,7 +329,7 @@ public class HelpPageTests
     {
         var help = new HelpPageViewModel();
 
-        Assert.Equal("1.0.0", help.Version);
+        Assert.Equal("1.0.1", help.Version);
         Assert.Equal("Tomoaki Bessho", help.Author);
         Assert.Equal("Copyright (c) 2026 Tomoaki Bessho", help.Copyright);
         Assert.Equal("Oura製品に関する「OURA」「OURARING」などの名称やロゴは、開発元である Oura Health Oy の登録商標です。", help.Trademark);
@@ -393,5 +393,37 @@ public class MembershipNoticeTests
 
         Assert.Contains("有効な Oura メンバーシップに加入していないユーザーのデータは、Oura API 経由で取得できません", settings.MembershipNotice);
         Assert.Equal(settings.MembershipNotice, help.MembershipNotice);
+    }
+}
+
+public class PathDisplayTests
+{
+    private static readonly (string, string)[] Folders =
+    [
+        (@"C:\Users\someone\AppData\Local", "%LOCALAPPDATA%"),
+        (@"C:\Users\someone\AppData\Roaming", "%APPDATA%"),
+        (@"C:\Users\someone", "%USERPROFILE%"),
+    ];
+
+    [Theory]
+    [InlineData(@"C:\Users\someone\AppData\Roaming\RingInfo\settings.json", @"%APPDATA%\RingInfo\settings.json")]
+    [InlineData(@"C:\Users\someone\AppData\Local\RingInfo\error.log", @"%LOCALAPPDATA%\RingInfo\error.log")]
+    [InlineData(@"c:\users\SOMEONE\appdata\local\RingInfo\error.log", @"%LOCALAPPDATA%\RingInfo\error.log")]
+    [InlineData(@"C:\Users\someone\Documents\a.txt", @"%USERPROFILE%\Documents\a.txt")]
+    [InlineData(@"C:\Users\someoneelse\a.txt", @"C:\Users\someoneelse\a.txt")]
+    [InlineData(@"D:\data\a.txt", @"D:\data\a.txt")]
+    public void ユーザー名が写らない書き方で表示する(string path, string expected)
+        => Assert.Equal(expected, RingInfo.App.Services.PathDisplay.ToDisplay(path, Folders));
+
+    [Fact]
+    public void ヘルプのファイルの場所にユーザー名を出さない()
+    {
+        var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        var help = new HelpPageViewModel(System.IO.Path.Combine(roaming, "RingInfo", "settings.json"), System.IO.Path.Combine(local, "RingInfo", "error.log"));
+
+        Assert.Equal(@"%APPDATA%\RingInfo\settings.json", help.SettingsFilePath);
+        Assert.Equal(@"%LOCALAPPDATA%\RingInfo\error.log", help.ErrorLogPath);
+        Assert.DoesNotContain(Environment.UserName, help.SettingsFilePath + help.ErrorLogPath);
     }
 }

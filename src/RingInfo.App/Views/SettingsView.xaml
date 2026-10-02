@@ -306,7 +306,7 @@
                         <Button DockPanel.Dock="Right" Content="フォルダーを開く" Command="{Binding OpenSettingsFolderCommand}" VerticalAlignment="Center" />
                         <StackPanel>
                             <TextBlock Text="設定ファイル" Style="{StaticResource SectionTitleText}" />
-                            <TextBlock Text="{Binding SettingsFilePath, TargetNullValue=（保存しないモード）}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding SettingsFileDisplay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
                             <TextBlock Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="0,4,0,0"
                                        Text="Client Secret とトークンは Windows のユーザー単位で暗号化して保存しています。" />
                         </StackPanel>

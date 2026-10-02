@@ -165,6 +165,82 @@ internal static class ScreenshotRunner
         File.WriteAllLines(Path.Combine(outputDirectory, "update_timing.txt"), lines);
     }
 
+    /// <summary>
+    /// 実データで、期間を 90 日に切り替えたときと、その後に各ページを開いたときに、
+    /// 画面が止まった最長時間を計測して real_timing.txt に書く（性能確認用。保存済みの連携情報を使う）。
+    /// </summary>
+    public static async Task MeasureRealAsync(string outputDirectory, double width = 1400, double height = 900)
+    {
+        Directory.CreateDirectory(outputDirectory);
+        var store = new SettingsStore(SettingsStore.DefaultFilePath, new DpapiSecretProtector());
+        var settings = store.Load();
+        var originalDays = settings.RangeDays;
+        settings.RangeDays = 14;
+
+        // トークンが自動更新された場合に失われないよう、本物の保存先を使う
+        var viewModel = new MainViewModel(store, settings, builtInClient: BuiltInClient.Load());
+        var window = new MainWindow
+        {
+            DataContext = viewModel,
+            Width = width,
+            Height = height,
+            WindowStartupLocation = WindowStartupLocation.Manual,
+            Left = -20000,
+            Top = -20000,
+            ShowInTaskbar = false,
+            ShowActivated = false,
+        };
+        Application.Current.MainWindow = window;
+        window.Show();
+        await viewModel.InitializeAsync();
+        await WaitForRenderAsync(window);
+
+        var lines = new List<string> { $"実データ: {!viewModel.IsDemo}" };
+
+        async Task Measure(string label, Action action)
+        {
+            var frames = System.Diagnostics.Stopwatch.StartNew();
+            long last = 0, maxGap = 0;
+            EventHandler onRendering = (_, _) =>
+            {
+                var now = frames.ElapsedMilliseconds;
+                maxGap = Math.Max(maxGap, now - last);
+                last = now;
+            };
+            System.Windows.Media.CompositionTarget.Rendering += onRendering;
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            action();
+            await Task.Delay(50);
+            for (var i = 0; i < 400 && (viewModel.IsBusy || viewModel.HeartRate.IsLoading); i++)
+            {
+                await Task.Delay(25);
+            }
+
+            await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+            var elapsed = watch.ElapsedMilliseconds;
+            await Task.Delay(100);
+            System.Windows.Media.CompositionTarget.Rendering -= onRendering;
+            lines.Add($"{label}: 完了まで {elapsed} ms / 画面が止まった最長時間 {maxGap} ms");
+        }
+
+        foreach (var startPage in new PageViewModel[] { viewModel.Dashboard, viewModel.Sleep })
+        {
+            viewModel.SelectedRange = viewModel.RangeOptions[1];
+            await Measure($"{startPage.Title} 表示中に 14 日へ", () => viewModel.SelectedPage = startPage);
+            await Measure($"{startPage.Title} 表示中に 90 日へ切り替え", () => viewModel.SelectedRange = viewModel.RangeOptions[^1]);
+            foreach (var page in viewModel.Pages)
+            {
+                await Measure($"  90 日で {page.Title} を開く", () => viewModel.SelectedPage = page);
+            }
+        }
+
+        // 期間の設定を元に戻して保存する
+        viewModel.SelectedRange = viewModel.RangeOptions.FirstOrDefault(r => r.Days == originalDays) ?? viewModel.RangeOptions[1];
+        await Task.Delay(800);
+        File.WriteAllLines(Path.Combine(outputDirectory, "real_timing.txt"), lines);
+        window.Close();
+    }
+
     /// <summary>テーマ切り替えにかかる時間を計測して theme_timing.txt に書く（性能確認用）</summary>
     private static async Task MeasureThemeSwitchAsync(Window window, MainViewModel viewModel, string outputDirectory)
     {

@@ -41,7 +41,14 @@ public partial class App : Application
             ScreenshotRunner.ShowConnected = e.Args.Contains("--connected");
             try
             {
-                await ScreenshotRunner.RunAsync(directory, days, width, height, empty);
+                if (e.Args.Contains("--measure-real"))
+                {
+                    await ScreenshotRunner.MeasureRealAsync(directory, width, height);
+                }
+                else
+                {
+                    await ScreenshotRunner.RunAsync(directory, days, width, height, empty);
+                }
             }
             finally
             {
@@ -82,7 +89,7 @@ public partial class App : Application
         }
 
         MessageBox.Show(
-            $"予期しないエラーが発生しました。\n\n{e.Exception.Message}\n\n詳細: {ErrorLogPath}",
+            $"予期しないエラーが発生しました。\n\n{e.Exception.Message}\n\n詳細: {PathDisplay.ToDisplay(ErrorLogPath)}",
             "RingInfo",
             MessageBoxButton.OK,
             MessageBoxImage.Error);

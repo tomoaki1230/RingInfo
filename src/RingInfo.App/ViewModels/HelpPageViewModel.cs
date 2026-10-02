@@ -18,7 +18,8 @@ public sealed record LibraryLicense(string Name, string Version, string LicenseN
 public sealed partial class HelpPageViewModel : PageViewModel
 {
     public const string AuthorName = "Tomoaki Bessho";
-    public const string AuthorUrl = SettingsPageViewModel.PublisherUrl;
+    /// <summary>製作者の GitHub プロフィール（ヘルプの「GitHub」リンク）</summary>
+    public const string AuthorUrl = "https://github.com/tomoaki1230";
 
     /// <summary>Oura メンバーシップについての注意（設定画面・ヘルプで共通）</summary>
     public const string MembershipNoticeText = "有効な Oura メンバーシップに加入していないユーザーのデータは、Oura API 経由で取得できません（Oura の仕様）。メンバーシップが有効でない場合、連携はできてもデータは表示されません。";
@@ -28,8 +29,9 @@ public sealed partial class HelpPageViewModel : PageViewModel
 
     public HelpPageViewModel(string? settingsFilePath = null, string? errorLogPath = null)
     {
-        SettingsFilePath = settingsFilePath ?? "（保存しないモード）";
-        ErrorLogPath = errorLogPath ?? "";
+        // ユーザー名が写らないよう %APPDATA% などの書き方で表示する
+        SettingsFilePath = settingsFilePath is null ? "（保存しないモード）" : Services.PathDisplay.ToDisplay(settingsFilePath);
+        ErrorLogPath = Services.PathDisplay.ToDisplay(errorLogPath);
 
         var assembly = typeof(HelpPageViewModel).Assembly;
         var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion

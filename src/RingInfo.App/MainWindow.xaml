@@ -169,6 +169,20 @@
                 <views:SettingsView DataContext="{Binding SettingsPage}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
                 <views:HelpView DataContext="{Binding Help}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
             </Grid>
+
+            <!-- 読み込み中: ページ上部の中央に、回転する円と処理内容を重ねて表示する（ページは薄く表示されるが、これは薄くしない） -->
+            <Border Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Padding="16,8"
+                    CornerRadius="18" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1"
+                    IsHitTestVisible="False"
+                    Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.25" />
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <ContentControl Style="{StaticResource Spinner}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding BusyText}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
         </Grid>
     </Grid>
 </Window>

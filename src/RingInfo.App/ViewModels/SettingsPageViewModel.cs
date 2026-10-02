@@ -34,10 +34,10 @@ public sealed partial class SettingsPageViewModel : PageViewModel
     public const string DeveloperPortalUrl = "https://developer.ouraring.com/applications";
 
     /// <summary>
-    /// 登録フォームの Website / Privacy Policy / Terms of Service に入れる URL（RingInfo 作者の GitHub）。
+    /// 登録フォームの Website / Privacy Policy / Terms of Service に入れる URL（RingInfo の GitHub リポジトリ）。
     /// 利用者が自分の URL を持っていなくても登録できるようにするため。
     /// </summary>
-    public const string PublisherUrl = "https://github.com/tomoaki1230";
+    public const string PublisherUrl = "https://github.com/tomoaki1230/RingInfo/";
 
     private readonly AppSettings _settings;
     private readonly Action _saveSettings;
@@ -77,6 +77,9 @@ public sealed partial class SettingsPageViewModel : PageViewModel
     public override string IconGlyph => "";
 
     public string? SettingsFilePath { get; }
+
+    /// <summary>画面に表示する設定ファイルの場所（ユーザー名が写らない書き方）</summary>
+    public string SettingsFileDisplay => SettingsFilePath is null ? "（保存しないモード）" : PathDisplay.ToDisplay(SettingsFilePath);
 
     public string DeveloperPortal => DeveloperPortalUrl;
 
@@ -179,7 +182,7 @@ public sealed partial class SettingsPageViewModel : PageViewModel
         new("Display Name", "RingInfo", "アプリの名前。連携時の許可画面に表示されます。"),
         new("Description", "Personal desktop viewer for my Oura Ring data", "アプリの説明。自由に書き換えてかまいません。"),
         new("Contact Email", null, "Oura に登録しているメールアドレス（Oura アプリにログインしているメールアドレス）を入力してください。"),
-        new("Website", PublisherUrl, "RingInfo 作者の GitHub ページです。ご自身の URL を持っていなくても、このままコピーして使えます。"),
+        new("Website", PublisherUrl, "RingInfo の GitHub ページです。ご自身の URL を持っていなくても、このままコピーして使えます。"),
         new("Privacy Policy", PublisherUrl, "Website と同じ URL を入れてください。"),
         new("Terms of Service", PublisherUrl, "Website と同じ URL を入れてください。"),
         new("Redirect URIs", RedirectUri.Trim(), "【重要】この値を 1 文字も変えずに入力してください。末尾に / を付けないこと。"),
